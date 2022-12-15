@@ -1,0 +1,161 @@
+<template>
+  <div class="user-form">
+    <div class="user-form__top">
+      <div class="user-form__title">Add user</div>
+      <button class="user-form__close" @click="handleCloseModal"></button>
+    </div>
+
+    <div class="user-form__border"></div>
+
+    <form action="" class="users-form__form">
+      <div class="user-form__input-wrapper">
+        <input type="text" id="name" class="user-form__input" placeholder="Name" />
+      </div>
+
+      <div class="user-form__input-wrapper">
+        <input type="text" id="surname" class="user-form__input" placeholder="Surrname" />
+      </div>
+
+      <div class="user-form__input-wrapper">
+        <input type="email" id="email" class="user-form__input" placeholder="Email" />
+      </div>
+
+      <div class="user-form__input-wrapper">
+        <input type="tel" id="phone" class="user-form__input" placeholder="Number" />
+      </div>
+    </form>
+
+    <div class="user-form__bottom">
+      <button class="user-form__button" type="submit">Add</button>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+export default {
+  name: 'UserForm',
+  emits: ['close-modal'],
+  methods: {
+    handleCloseModal() {
+      this.$emit('close-modal');
+    },
+  },
+};
+</script>
+
+<style lang="scss">
+@import '@/utils/vars.scss';
+@import '@/utils/mixins.scss';
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 20px;
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+
+    @include onTablet {
+      font-size: 30px;
+    }
+  }
+
+  &__close {
+    width: 30px;
+    height: 30px;
+    background: url('@/assets/cross.png') no-repeat;
+    background-size: cover;
+    cursor: pointer;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    @include onTablet {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  &__border {
+    width: 100%;
+    height: 4px;
+    background-color: #fff;
+    margin-bottom: 20px;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__input {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #353a47;
+    color: #fff;
+    font-size: 14px;
+    transition: background-color 0.3s ease-in-out;
+    margin-bottom: 20px;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+
+    &:focus {
+      background-color: #fff;
+      color: #353a47;
+    }
+
+    @include onTablet {
+      font-size: 18px;
+    }
+  }
+
+  &__button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #353a47;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-top: 40px;
+
+    &:hover {
+      background-color: #fff;
+      color: #353a47;
+    }
+
+    @include onTablet {
+      font-size: 36px;
+    }
+  }
+
+  &__bottom {
+    display: flex;
+    justify-content: center;
+  }
+}
+</style>

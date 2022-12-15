@@ -1,85 +1,193 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
-</script>
+<template lang="">
+  <div class="app-wrapper">
+    <ModalWindow :is-modal-open="isModalOpen">
+      <UserForm @close-modal="handleOpenModal" />
+    </ModalWindow>
+    <header class="header">
+      <img src="@/assets/main_logo.svg" alt="main_logo" class="header__logo" />
+    </header>
 
-<template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <main class="main">
+      <div class="main__head">
+        <button class="main__add-user" @click="handleOpenModal"></button>
+        <OptionsBlock :usersLimit="usersLimit" @update:usersLimit="usersLimit = $event"/>
+      </div>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+      <div class="table-wrapper">
+        <UsersTable :users="users"/>
+      </div>
+      <!-- <PaginationBlock /> -->
+    </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<script lang="ts">
+import PaginationBlock from './components/PaginationBlock.vue';
+import UsersTable from './components/UsersTable.vue';
+import OptionsBlock from './components/OptionsBlock.vue';
+import ModalWindow from './components/ModalWindow.vue';
+import UserForm from './components/UserForm.vue';
+
+import { getUsersLimit } from './api/usres';
+import { onMounted, onUpdated } from 'vue';
+
+export default {
+  name: 'App',
+
+  components: {
+    PaginationBlock: PaginationBlock,
+    UsersTable: UsersTable,
+    OptionsBlock: OptionsBlock,
+    ModalWindow: ModalWindow,
+    UserForm: UserForm,
+  },
+
+  data() {
+    return {
+      isModalOpen: false,
+      usersLimit: 10,
+      users: [],
+    };
+  },
+
+  methods: {
+    handleOpenModal() {
+      this.isModalOpen = !this.isModalOpen;
+      console.log(this.isModalOpen);
+      console.log(this.usersLimit);
+    },
+  },
+
+  created() {
+    getUsersLimit(this.usersLimit).then((res) => {
+      console.log('res', res);
+
+      this.users = res.results;
+      console.log('users', this.users);
+    });
+  },
+
+  watch: {
+    usersLimit() {
+      getUsersLimit(this.usersLimit).then((res) => {
+        console.log('res', res);
+
+        this.users = res.results;
+        console.log('users', this.users);
+      });
+    },
+  },
+};
+</script>
+
+<style lang="scss">
+@import '@/utils/vars.scss';
+@import '@/utils/mixins.scss';
+
+.table-wrapper {
+  overflow-x: auto;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #5f6675;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
+.header {
+  background-color: #353a47;
+  border-bottom: 1px solid #000;
+  padding: 20px 0;
   text-align: center;
-  margin-top: 2rem;
+  margin-bottom: 30px;
+
+  &__logo {
+    width: 200px;
+
+    @include onTablet {
+      width: 300px;
+    }
+  }
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
+.main {
+  margin: 0 20px;
+  border-radius: 5px;
+  background: #fff;
+  min-height: 100vh;
+  position: relative;
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
+  @include onTablet {
+    margin: 0 40px;
+  }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
+  &__head {
     display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 20px;
+    flex-direction: column;
+    // margin: 20px 50px;
+
+    @include onTablet {
+      flex-direction: row;
+      justify-content: space-between;
+    }
   }
 
-  .logo {
-    margin: 0 2rem 0 0;
+  &__border {
+    border-bottom: 1px solid rgb(216, 205, 205);
+    margin: 10px 20px;
   }
 
-  header .wrapper {
+  &__add-user {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #353a47;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    // margin-left: 60px;
+    margin: auto;
     display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+    transition: 0.5s;
 
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
+    @include onTablet {
+      margin-left: 80px;
+    }
 
-    padding: 1rem 0;
-    margin-top: 1rem;
+    &:hover {
+      opacity: 60%;
+    }
+
+    &:active {
+      transform: scale(0.8);
+    }
+
+    &::before {
+      content: '';
+      width: 20px;
+      height: 2px;
+      background-color: #fff;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &::after {
+      content: '';
+      width: 2px;
+      height: 20px;
+      background-color: #fff;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 }
 </style>
