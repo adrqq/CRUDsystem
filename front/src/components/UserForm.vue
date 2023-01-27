@@ -7,38 +7,86 @@
 
     <div class="user-form__border"></div>
 
-    <form action="" class="users-form__form">
+    <form action="" class="users-form__form" @submit="handleUserSubmit">
       <div class="user-form__input-wrapper">
-        <input type="text" id="name" class="user-form__input" placeholder="Name" />
+        <input type="text" id="name" class="user-form__input" placeholder="Name" required v-model.trim="name" />
       </div>
 
       <div class="user-form__input-wrapper">
-        <input type="text" id="surname" class="user-form__input" placeholder="Surrname" />
+        <input type="text" id="surname" class="user-form__input" placeholder="Surname" required v-model.trim="surname" />
       </div>
 
       <div class="user-form__input-wrapper">
-        <input type="email" id="email" class="user-form__input" placeholder="Email" />
+        <input type="email" id="email" class="user-form__input" placeholder="Email" required  v-model.trim="email" />
       </div>
 
       <div class="user-form__input-wrapper">
-        <input type="tel" id="phone" class="user-form__input" placeholder="Number" />
+        <input type="tel" id="phone" class="user-form__input" placeholder="Number" required  v-model.trim="phone" />
+      </div>
+
+      <div class="user-form__bottom">
+        <button class="user-form__button" type="submit">Add</button>
       </div>
     </form>
-
-    <div class="user-form__bottom">
-      <button class="user-form__button" type="submit">Add</button>
-    </div>
   </div>
 </template>
 
 <script lang="ts">
+import { useUsersStore } from '../stores/users';
+import { addUser } from '../api/usersApi';
+import { getUsersLimit } from '../api/usersApi';
+
 export default {
   name: 'UserForm',
-  emits: ['close-modal'],
+  data() {
+    return {
+      name: '',
+      surname: '',
+      email: '',
+      phone: '',
+    };
+  },
   methods: {
     handleCloseModal() {
       this.$emit('close-modal');
     },
+
+    handleUserSubmit(e: Event) {
+      e.preventDefault();
+      // const name = (e.target as HTMLFormElement).name.value;
+      // const surname = (e.target as HTMLFormElement).surname.value;
+      // const email = (e.target as HTMLFormElement).email.value;
+      // const phone = (e.target as HTMLFormElement).phone.value;
+
+      const user = {
+        name: this.name,
+        surname: this.surname,
+        email: this.email,
+        phone: this.phone,
+        id: this.usersStore.totalCount + 1,
+        date: Date.now(),
+      };
+
+      addUser(user).then(() => {
+        this.usersStore.isLoading = true;
+
+        getUsersLimit(10, 'IDup', this.usersStore.currentUserPage).then((res) => {
+          console.log('res', res);
+
+          this.usersStore.totalCount = res[1];
+          this.usersStore.users = res[0];
+        }).finally(() => {
+          this.usersStore.isLoading = false;
+        });
+      });
+
+      this.$emit('close-modal');
+    },
+  },
+
+  setup() {
+    const usersStore = useUsersStore();
+    return { usersStore };
   },
 };
 </script>
@@ -118,8 +166,6 @@ export default {
     font-size: 14px;
     transition: background-color 0.3s ease-in-out;
     margin-bottom: 20px;
-    font-weight: 500;
-    font-family: 'Roboto', sans-serif;
 
     &:focus {
       background-color: #fff;

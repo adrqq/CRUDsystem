@@ -7,12 +7,8 @@
         <option value="IDdown">ID⇓</option>
         <option value="NameDown">Name A-Z</option>
         <option value="NameUp">Name Z-A</option>
-        <option value="SurnameDown">Surname A-Z</option>
-        <option value="SurnameUp">Surname Z-A</option>
         <option value="DateAddedUp">Date added ⇑</option>
         <option value="DateAddedDown">Date added ⇓</option>
-        <option value="EventCountUp">Event count ⇑</option>
-        <option value="EventCountDown">Event count ⇓</option>
       </select>
     </div>
 
@@ -30,11 +26,12 @@
 </template>
 <script lang="ts">
 import { useUsersStore } from '../stores/users';
+import { useEventsStore } from '../stores/events';
 
 export default {
-  name: 'OptionsBlock',
+  name: 'OptionsEventBlock',
   props: {
-    usersLimit: {
+    eventsLimit: {
       type: Number,
       required: true,
     },
@@ -51,7 +48,7 @@ export default {
   methods: {
     setPagination(e: any) {
       // this.$emit('setPagination', e.target.value);
-      this.$emit('update:usersLimit', e.target.value)
+      this.$emit('update:eventsLimit', e.target.value)
     },
 
     setSortby(e: any) {
@@ -69,22 +66,20 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import '@/utils/vars.scss';
 @import '@/utils/mixins.scss';
 
 .options {
   display: flex;
-  justify-content: center;
   margin-bottom: 20px;
   flex-direction: column;
   gap: 20px;
   margin-top: 30px;
-  margin-left: 20px;
 
-  @include onTablet {
-    margin-left: 0;
-  }
+  // @include onTablet {
+  //   margin-left: 0;
+  // }
 
   @include onTablet {
     flex-direction: row;
@@ -92,7 +87,7 @@ export default {
 
   &__title {
     font-size: 12px;
-    color: rgb(188, 175, 175);
+    color: rgb(0, 0, 0);
     margin-bottom: 2px;
     margin-left: 2px;
   }
@@ -121,12 +116,7 @@ export default {
     font-size: 16px;
     margin-right: 20px;
     cursor: pointer;
-    width: 200px;
-  }
-
-  @include onTablet {
-    margin-right: 40px;
-    justify-content: flex-end;
+    width: 175px;
   }
 
   &__item {

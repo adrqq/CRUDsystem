@@ -7,21 +7,33 @@
         <th>Email</th>
         <th>Phone</th>
         <th>Time to next event</th>
+        <th>Events count</th>
       </tr>
     </thead>
     <tbody>
-      <UserItem :user="user" v-for="user in users"/>
+      <UserItem :user="user" v-for="user in users" :key="user._id" v-if="!storeUsers.isLoading"/>
+
+
+      <div class="loader-wrapper" v-if="storeUsers.isLoading">
+        <Loader />
+      </div>
+      <tr v-if="storeUsers.isLoading">
+        <td class="loader_td"></td>
+      </tr>
     </tbody>
   </table>
 </template>
 
-<script lang="ts">
+<script>
 import UserItem from './UserItem.vue';
+import Loader from './UI/Loader.vue';
+import { useUsersStore } from '../stores/users';
 
 export default {
   name: 'UsersTable',
   components: {
     UserItem: UserItem,
+    Loader: Loader,
   },
 
   props: {
@@ -29,6 +41,14 @@ export default {
       type: Array,
       required: true,
     },
+  },
+
+  setup() {
+    const storeUsers = useUsersStore();
+
+    return {
+      storeUsers,
+    };
   },
 };
 </script>
@@ -44,6 +64,12 @@ export default {
   border-radius: 5px 5px 0 0;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+  min-height: 100vh;
+}
+
+.loader-wrapper {
+  position: absolute;
+  left: 0;
 }
 
 .users-table thead tr {
@@ -73,5 +99,17 @@ export default {
 .users-table tbody tr.active-row {
   font-weight: bold;
   color: $charcoal-color-light;
+}
+
+.loader-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+.loader_td {
+  height: 100vh;
 }
 </style>
