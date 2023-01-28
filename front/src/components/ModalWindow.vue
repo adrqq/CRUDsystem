@@ -6,6 +6,8 @@
   </div>
 </template>
 <script lang="ts">
+import { classBody } from '@babel/types';
+
 export default {
   name: 'ModalWindow',
 
@@ -50,5 +52,10 @@ export default {
       min-width: 400px;
     }
   }
+}
+
+.stop-scrolling {
+  height: 100%;
+  overflow: hidden;
 }
 </style>

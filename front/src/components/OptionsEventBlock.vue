@@ -49,6 +49,7 @@ export default {
     setPagination(e: any) {
       // this.$emit('setPagination', e.target.value);
       this.$emit('update:eventsLimit', e.target.value)
+      this.eventsStore.eventsLimit = e.target.value
     },
 
     setSortby(e: any) {
@@ -58,9 +59,11 @@ export default {
 
   setup() {
     const storeUsers = useUsersStore();
+    const eventsStore = useEventsStore();
 
     return {
       storeUsers,
+      eventsStore
     };
   },
 };

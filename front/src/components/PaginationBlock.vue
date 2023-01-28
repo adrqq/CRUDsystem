@@ -1,5 +1,5 @@
 <template>
-  <div class="pagination">
+  <div class="pagination" v-if="storeUsers.users.length !== 0">
     <div class="pagination__button" @click="handleArrowClick('left')" :aria-disabled="currentPage === 1">
       <img src="@/assets/left-arrow.png" alt="arrow_left" class="pagination__arrow pagination__arrow_left" />
     </div>
@@ -86,8 +86,11 @@ export default {
       console.log(page);
 
       if (this.isEvents) {
+        window.scrollTo(0, 600);
         this.storeEvents.currentEventPage = page;
       } else {
+        window.scrollTo(100, 100);
+
         this.storeUsers.currentUserPage = page;
       }
     },

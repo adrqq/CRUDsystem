@@ -72,6 +72,10 @@ export default {
 @import './utils/vars.scss';
 @import './utils/mixins.scss';
 
+* {
+  scroll-behavior: smooth;
+}
+
 .main {
   margin: 0 20px;
   border-radius: 5px;

@@ -64,7 +64,7 @@ export default {
   border-radius: 5px 5px 0 0;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  min-height: 100vh;
+  min-height: 70vh;
 }
 
 .loader-wrapper {

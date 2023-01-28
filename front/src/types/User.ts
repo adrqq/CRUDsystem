@@ -5,4 +5,6 @@ export interface User {
   phone: string,
   id: number,
   date: number,
+  eventsCount: number,
+  takenTimes: [],
 };

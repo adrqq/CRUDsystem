@@ -9,8 +9,9 @@ export const useEventsStore = defineStore('events', {
     totalCount: ref(0),
     eventsLimit: ref(10),
     currentEventPage: ref(1),
-    sortBy: ref('date'),
+    sortBy: ref('IDup'),
     itemsPerPage: ref(10),
     isModalOpen: ref(false),
+    validationError: ref(false),
   }),
 });

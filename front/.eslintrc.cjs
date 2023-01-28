@@ -1,30 +1,50 @@
 /* eslint-env node */
 module.exports = {
-  root: true,
-  env: {
-    browser: true,
-    node: true,
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
   },
-  extends: ['eslint:recommended', 'plugin:vue/vue3-recommended', 'prettier'],
-  plugins: ['prettier'],
-  rules: {
-    'prettier/prettier': ['error'],
-    'vue/require-default-prop': 0,
-    'vue/html-indent': ['error', 2],
-    'vue/singleline-html-element-content-newline': 0,
-    'vue/component-name-in-template-casing': ['error', 'PascalCase'],
-    'vue/max-attributes-per-line': [
-      'error',
+  "parserOptions": {
+    "parser": "babel-eslint"
+  },
+  "extends": ["@vue/standard", "plugin:vue/recommended"],
+  "rules": {
+    "vue/html-indent": [
+      "error",
+      2,
       {
-        singleline: 3,
-        multiline: {
-          max: 1,
-          allowFirstLine: false,
-        },
-      },
+        "attribute": 1,
+        "closeBracket": 0,
+        "switchCase": 0,
+        "ignores": []
+      }
     ],
+
+    "vue/max-attributes-per-line": [
+      2,
+      {
+        "singleline": 10,
+        "multiline": {
+          "max": 1,
+          "allowFirstLine": false
+        }
+      }
+    ],
+    "indent": ["error", 4],
+    "vue/component-name-in-template-casing": ["error", "kebab-case"],
+    "vue/script-indent": ["error", 4, { "baseIndent": 1 }],
+    "space-before-function-paren": ["error", "never"],
+    "semi": [2, "never"],
+    "vue/singleline-html-element-content-newline": "off",
+    "vue/multiline-html-element-content-newline": "off"
   },
-  globals: {
-    _: true,
-  },
+  "overrides": [
+    {
+      "files": ["*.vue"],
+      "rules": {
+        "indent": "off"
+      }
+    }
+  ]
 };

@@ -65,6 +65,7 @@ export default {
         phone: this.phone,
         id: this.usersStore.totalCount + 1,
         date: Date.now(),
+        takenTimes: [[1, 1]],
       };
 
       addUser(user).then(() => {

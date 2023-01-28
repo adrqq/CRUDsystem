@@ -5,35 +5,35 @@
     <div class="event-form__title">
       <h2 class="event-form__title-text">Add new event</h2>
     </div>
-    <form class="event-form__content" @submit.prevent="handleAddEvent">
+    <form class="event-form__content" @submit="handleAddEvent">
       <div class="event-form__content-item">
         <span class="event-form__content-item-title">Name:</span>
-        <input type="text" class="event-form__content-item-input" v-model.trim="name" />
+        <input type="text" class="event-form__content-item-input" v-model.trim="name" placeholder="example: Finish pr..."/>
       </div>
       <div class="event-form__content-item">
         <span class="event-form__content-item-title">Description:</span>
-        <textarea type="text" class="event-form__content-item-input event-form__content-item-description" v-model.trim="description" />
+        <textarea type="text" class="event-form__content-item-input event-form__content-item-description" v-model.trim="description" placeholder="Enter your description..." required/>
       </div>
       <div class="event-form__content-item">
         <span class="event-form__content-item-title">Date:</span>
-        <input type="date" class="event-form__content-item-input" v-model.trim="date"/>
+        <input type="date" class="event-form__content-item-input" v-model.trim="date" required />
       </div>
       <div class="event-form__content-item">
         <span class="event-form__content-item-title">StartTime:</span>
-        <input type="time" class="event-form__content-item-input" v-model.trim="startTime"/>
+        <input type="time" class="event-form__content-item-input" v-model.trim="startTime" required />
       </div>
       <div class="event-form__content-item">
         <span class="event-form__content-item-title">EndTime:</span>
-        <input type="time" class="event-form__content-item-input" v-model.trim="endTime"/>
+        <input type="time" class="event-form__content-item-input" v-model.trim="endTime" required/>
       </div>
       <div class="event-form__buttons">
-      <button class="event-form__button" type="submit">
-        <h3 class="event-form__button-text">Add</h3>
-      </button>
-      <button class="event-form__button" @click="handleCloseModal">
-        <h3 class="event-form__button-text">Cancel</h3>
-      </button>
-    </div>
+        <button class="event-form__button" type="submit">
+          <h3 class="event-form__button-text">Add</h3>
+        </button>
+        <button class="event-form__button" @click="handleCloseModal">
+          <h3 class="event-form__button-text">Cancel</h3>
+        </button>
+      </div>
     </form>
   </div>
 </template>
@@ -72,39 +72,82 @@ export default {
     },
 
     handleAddEvent(e) {
-      console.log('name', this.name);
-      console.log('description', this.description);
-      console.log('date', this.date);
-      console.log('startTime', this.startTime);
-      console.log('endTime', this.endTime);
+      e.preventDefault();
+      // console.log('name', this.name);
+      // console.log('description', this.description);
+      // console.log('date', this.date);
+      // console.log('startTime', this.startTime);
+      // console.log('endTime', this.endTime);
+
+      const dateControl = document.querySelector('input[type="date"]');
+      console.log(new Date(dateControl.valueAsNumber).toUTCString())
+
+      let timeFrom = new Date(dateControl.valueAsNumber).toUTCString().split('').splice(0, 17).join('') + this.startTime + ':00' + ' GMT'
+      console.log(timeFrom)
+
+      let timeTo = new Date(dateControl.valueAsNumber).toUTCString().split('').splice(0, 17).join('') + this.endTime + ':00' + ' GMT'
+      console.log(timeTo)
+
+      this.usersStore.users = this.usersStore.users.map((user, index) => {
+        if (user.id === this.usersStore.currentUser.id) {
+          let isValid = true;
+
+          console.log(user)
+
+          user.takenTimes.forEach(timeline => {
+            if (Date.parse(timeFrom) > timeline[0] && Date.parse(timeFrom) < timeline[1]) {
+              isValid = false
+            } else if (Date.parse(timeTo) > timeline[0] && Date.parse(timeTo) < timeline[1]) {
+              isValid = false
+            }
+          })
+
+          if (isValid) {
+            user.takenTimes.push([Date.parse(timeFrom), Date.parse(timeTo)]);
+          } else {
+            this.eventsStore.validationError = true
+            this.eventsStore.isModalOpen = false;
+
+            setTimeout(() => {
+              this.eventsStore.validationError = false
+            }, 3000)
+            console.log(this.eventsStore.validationError)
+          }
+
+          console.log([Date.parse(timeFrom), Date.parse(timeTo)])
+        }
+
+        return {
+          ...user,
+        }
+      })
+
+      console.log(this.usersStore.users)
 
       const event = {
+        id: this.eventsStore.totalCount + 1,
         name: this.name,
         description: this.description,
-        date: this.date,
+        date: dateControl.valueAsNumber,
         startTime: this.startTime,
         endTime: this.endTime,
         userId: this.usersStore.currentUser.id,
       };
 
-      addEvent(event)
-        .then((res) => {
-          console.log('res', res);
-          this.eventsStore.isModalOpen = false;
-          
-          getUserEventsLimit(0, 10)
-            .then((res) => {
-              console.log('res', res);
-              this.eventsStore.events = [0];
+      if (!this.eventsStore.validationError) {
+        addEvent(event)
+          .then(() => {
+            getUserEventsLimit(this.usersStore.currentUser.id, this.eventsStore.eventsLimit, this.eventsStore.currentEventPage, this.eventsStore.sortBy).then((res) => {
               this.eventsStore.totalCount = res[1];
-            })
-            .catch((err) => {
-              console.log('err', err);
+              this.eventsStore.events = res[0];
             });
-        })
-        .catch((err) => {
-          console.log('err', err);
-        });
+
+            this.eventsStore.isModalOpen = false;
+          })
+          .catch((err) => {
+            console.log('err', err);
+          });
+      }
     }
   },
 }
@@ -164,6 +207,10 @@ export default {
   margin-right: 20px;
 }
 
+.event-form__content-item-title::placeholder {
+  color: #000;
+}
+
 .event-form__content-item-input {
   width: 100%;
   height: 30px;
@@ -195,6 +242,7 @@ export default {
   background-color: #fff;
   cursor: pointer;
   transition: all 0.3s ease;
+
   &:hover {
     background-color: #000;
     color: #fff;

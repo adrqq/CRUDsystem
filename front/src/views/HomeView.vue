@@ -13,7 +13,7 @@
       <UsersTable :users="storeUsers.users"/>
     </div>
 
-    <div v-if="!storeUsers.isLoading && storeUsers.users.length === 0 && !storeUsers.notFoundError" class="no_users">
+    <div v-if="!storeUsers.isLoading && storeUsers.users.length === 0 && !storeUsers.notFoundError" class="no-users">
       No users yet, try and add them using plus button
     </div>
 
@@ -25,7 +25,7 @@
       :isLoading="storeUsers.isLoading"
     />
     <div v-else>
-      <div v-if="storeUsers.externalServerError" class="error">
+      <div v-if="storeUsers.externalServerError " class="error">
         <div class="error__code">500</div>
         <div class="error__text">Oops.... There is an internal server problem try reloading the page</div>
       </div>
@@ -74,9 +74,8 @@ export default {
 
     onMounted(() => {
       storeUsers.isLoading = true;
-      getUsersLimit(10, 'IDup').then((res) => {
+      getUsersLimit(10, 'IDup', storeUsers.currentUserPage).then((res) => {
         console.log('res', res);
-        console.log(res.status)
 
         if (res === 'error505') {
           storeUsers.externalServerError = true;
@@ -102,7 +101,7 @@ export default {
 
   methods: {
     usersGetter() {
-      getUsersLimit(this.usersLimit, this.sortBy).then((res) => {
+      getUsersLimit(this.usersLimit, this.sortBy, this.storeUsers.currentUserPage).then((res) => {
         console.log('res', res);
 
         this.storeUsers.totalCount = res[1];
@@ -149,6 +148,7 @@ export default {
 <style lang="scss" scoped>
 @import '@/utils/vars.scss';
 @import '@/utils/mixins.scss';
+
 .main {
   @include onTablet {
     margin: 0 40px;
@@ -238,7 +238,7 @@ export default {
   &__code {
     font-size: 32px;
     margin-top: 40px;
-    font-weight: 800 ;
+    font-weight: 800;
     align-self: center;
     margin-bottom: 40px;
 
@@ -253,7 +253,7 @@ export default {
   }
 }
 
-.no_users {
+.no-users {
   position: absolute;
   left: 50%;
   top: 50%;

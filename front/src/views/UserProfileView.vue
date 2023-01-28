@@ -6,7 +6,7 @@
   <div class="user-profile__header">
     <h1 class="user-profile__title">User Profile</h1>
       <router-link to="/">
-        <img src="../assets/home-page.png" alt="hime_page" class="user-profile__link">
+        <img src="../assets/home-page.png" alt="home_page" class="user-profile__link">
       </router-link>
   </div>
   <div class="user-profile__content">
@@ -31,13 +31,6 @@
       <button class="user-profile__button" @click="handleOpenModal">
         <h3 class="user-profile__button__text">Add new event</h3>
       </button>
-      <PaginationBlock
-       :limit="this.eventsStore.eventsLimit"
-       :isEvents="true"
-       :currentPage="eventsStore.currentEventPage"
-       :sortBy="eventsStore.sortBy"
-       :isLoading="eventsStore.isLoading"
-      />
     </div>
     <div class="user-profile__events">
       <h2 class="user-profile__events-title">Events</h2>
@@ -49,21 +42,52 @@
         @update:sortBy="sortBy = $event"
       />
       <div class="user-profile__events-list">
-        <div class="user-profile__events-item" v-for="event in this.eventsStore.events" :key="event._id" v-if="!eventsStore.isLoading">
-          <div class="user-profile__events-item-info">
-            <span class="user-profile__events-item-title">{{event.name}}</span>
-            <div class="user-profile__events-item-description">
-              <span class="user-profile__events-item-description__text">{{event.description}}</span>
+        <div class="user-profile__events-item" v-for="event in eventsStore.events" :key="event._id" v-if="!eventsStore.isLoading">
+          <div class="card-container">
+            <div class="photo-container">
+              <div class="date">
+                <div class="day">{{new Date(event.date).toUTCString().split('').splice(8, 3).join('')}}</div>
+                <div class="month">{{new Date(event.date).toUTCString().split('').splice(4, 3).join('')}}</div>
+              </div>
+              <div class="image"></div>
             </div>
-          </div>
-          <div class="user-profile__events-item-dates">
-            <span class="user-profile__events-item-title-date">Start-End Date</span>
-            <span class="user-profile__events-item-date">{{event.date}}</span>
-            <span class="user-profile__events-item-date">00:12</span>
+            <div class="info-container">
+              <div class="info-wrapper">
+                <div class="event-name">
+                  {{event.name}}
+                </div>
+                <div class="event-description">
+                  {{event.description}}
+                </div>
+              </div>
+              <div class="info-wrapper">
+                <div class="time-text">start-end</div>
+                <div class="time">{{`${event.startTime} - ${event.endTime}`}}</div>
+              </div>
+              <div class="card-container__delete" @click="() => {
+                handleDeleteEvent(event.id)
+              }">x</div>
+            </div>
           </div>
         </div>
         <Loader v-if="eventsStore.isLoading"/>
+        <PaginationBlock
+          v-if="eventsStore.events.length !== 0"
+          :limit="this.eventsStore.eventsLimit"
+          :isEvents="true"
+          :currentPage="eventsStore.currentEventPage"
+          :sortBy="eventsStore.sortBy"
+          :isLoading="eventsStore.isLoading"
+        />
+        <div v-if="!eventsStore.isLoading && eventsStore.events.length === 0" class="no-events">
+          There is no events for this user at the time click on the button above and add new event
+        </div>
       </div>
+    </div>
+  </div>
+  <div v-if="eventsStore.validationError" class="validation-error">
+    <div class="validation-error__text">
+      Error: this timeline overlaps another one try changing it!
     </div>
   </div>
 </div>
@@ -77,6 +101,7 @@ import { onMounted } from 'vue';
 import { getUserEventsLimit } from '../api/eventsApi';
 import OptionsEventBlock from '../components/OptionsEventBlock.vue';
 import Loader from '../components/UI/Loader.vue';
+import { deleteEvent } from '../api/eventsApi';
 
 
 export default {
@@ -110,6 +135,16 @@ export default {
     handleOpenModal() {
       this.eventsStore.isModalOpen = true;
     },
+
+    handleDeleteEvent(id) {
+      try {
+        deleteEvent(id).then(() => {
+          this.eventsStore.events = this.eventsStore.events.filter(eve => eve.id !== id)
+        })
+      } catch (err) {
+        console.log(err)
+      }
+    }
   },
 
   watch: {
@@ -168,6 +203,7 @@ export default {
   max-width: 1200px;
   margin: 40px auto;
   padding: 0 20px;
+  position: relative;
 
   &__button {
     width: 100%;
@@ -221,7 +257,6 @@ export default {
 
   &__content {
     display: flex;
-    justify-content: space-between;
     width: 100%;
     min-height: 100vh;
   }
@@ -238,10 +273,10 @@ export default {
 
   &__info-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     width: 100%;
     margin-bottom: 20px;
+    justify-content: space-between;
   }
 
   &__info-title {
@@ -266,7 +301,10 @@ export default {
     width: 50%;
     background: $dark-sea-green-color;
     border-radius: 5px;
-    padding: 30px;
+
+    @include onTablet {
+      padding: 30px;
+    }
   }
 
   &__events-title {
@@ -279,98 +317,202 @@ export default {
   &__events-list {
     display: flex;
     flex-direction: column;
-    width: 100%;
     margin-top: 20px;
   }
 
   &__events-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #000;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    // display: flex;
+    // justify-content: space-between;
+    // align-items: center;
+    // width: 100%;
+    // padding: 10px;
+    // border: 1px solid #000;
+    // border-radius: 5px;
+    // margin-bottom: 10px;
 
-    @include onMobile {
-      flex-direction: column;
+    // @include onMobile {
+    //   flex-direction: column;
+    // }
+  }
+
+  // &__events-item-info {}
+
+  // &__events-item-title {}
+
+  // &__events-item-title-date {}
+
+  // &__events-item-description {
+  //   width: 100px;
+  //   word-wrap: break-word;
+  // }
+
+  // &__events-item-dates {}
+
+  // &__events-item-date {}
+
+  &__content {
+    flex-direction: column;
+  }
+
+  &__info {
+    width: 100%;
+    margin-right: 0;
+    border-radius: 5px 5px 0 0;
+  }
+
+  &__events {
+    width: 100%;
+    border-radius: 0 0 5px 5px;
+  }
+
+  .photo-container {
+    font-size: 1.5em;
+    background-color: #2c3e52;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    grid-area: photo;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-container {
+    border-radius: 5px;
+    margin: 10px;
+    display: grid;
+    grid-template-areas:
+      'photo info';
+    grid-template-columns: 150px 1fr;
+    width: 90%;
+    background-color: #ffffff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    line-height: 1.75em;
+
+    &__delete {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-weight: 900;
+      font-size: 20px;
+      cursor: pointer;
     }
   }
 
-  &__events-item-info {
+  .info-container {
+    padding: 20px;
+    grid-area: info;
     display: flex;
     flex-direction: column;
-    width: 50%;
-  }
-
-  &__events-item-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: #000;
-    margin-bottom: 10px;
-  }
-
-  &__events-item-title-date {
-    font-size: 18px;
-    font-weight: 500;
-    color: #000;
-    margin-top: 20px;
+    position: relative;
 
     @include onTablet {
-      margin-top: 10px;
+      flex-direction: row;
+      justify-content: space-between;
     }
   }
 
-  &__events-item-description {
-    height: 100px;
+  .event-name {
+    font-weight: bold;
+    padding-bottom: 5px;
+  }
 
-    @include onDesktop {
-      border: 2px solid #000;
-      border-radius: 4px;
-      padding: 10px;
-      min-width: 250px;
+  .event-location {
+    font-weight: 300;
+  }
+
+  .day {
+    font-weight: 300;
+  }
+
+  .month {
+    font-weight: 600;
+  }
+
+  .time-text {
+    font-weight: bold;
+    padding: 20px;
+  }
+
+  .time {
+    padding-left: 10px;
+  }
+
+  @media(max-width: 600px) {
+    .card-container {
+      // width: 100%;
+    }
+
+    .photo-container {
+      grid-column: 2;
+      min-width: 15px;
+      padding: 0;
+    }
+
+    .info-container {
+      grid-column: 1;
+    }
+
+    .day {
+      font-size: 10px;
+    }
+
+    .month {
+      font-size: 8px;
+    }
+  }
+
+  .info-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .no-events {
+    height: 200px;
+    margin-top: 100px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .validation-error {
+    position: absolute;
+    top: 38%;
+    background: $charcoal-color-light;
+    height: 200px;
+    width: 200px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pop 3s ease-in-out;
+
+
+    @keyframes pop {
+      0% {
+        width: 400px;
+        height: 200px;
+      }
+
+      100% {
+        width: 700px;
+        height: 400px;
+      }
+    }
+
+    @include onTablet {
+      width: 500px;
+      height: 300px;
     }
 
     &__text {
-      font-size: 16px;
-      font-weight: 400;
-      color: #000;
-      width: 20px;
-    }
-  }
+      color: #fff;
+      font-weight: 600;
+      padding: 10px;
 
-  &__events-item-dates {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    gap: 10px;
-
-    @include onTablet {
-      margin-left: 100px;
-    }
-  }
-
-  &__events-item-date {
-    font-size: 14px;
-    font-weight: 400;
-    color: #000;
-  }
-
-  @media (max-width: 1000px) {
-    &__content {
-      flex-direction: column;
-    }
-
-    &__info {
-      width: 100%;
-      margin-right: 0;
-      border-radius: 5px 5px 0 0;
-    }
-
-    &__events {
-      width: 100%;
-      border-radius: 0 0 5px 5px;
+      @include onTablet {
+        font-size: 32px;
+        width: 400px;
+      }
     }
   }
 }
