@@ -31,7 +31,7 @@ module.exports = {
         }
       }
     ],
-    "indent": ["error", 4],
+    "indent": ["error", 2],
     "vue/component-name-in-template-casing": ["error", "kebab-case"],
     "vue/script-indent": ["error", 4, { "baseIndent": 1 }],
     "space-before-function-paren": ["error", "never"],

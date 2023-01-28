@@ -8,7 +8,7 @@
     <td>
       <a href="tel:+380000000000" class="user-item__item">{{ user.phone }}</a>
     </td>
-    <td class="user-item__item">{{ user.timeToNextEvent - Date.now() < 0 ? 'No events' : convertMsToTime(user.timeToNextEvent - Date.now()) }}</td>
+    <td class="user-item__item">{{ user.nextEvent }}</td>
     <td>{{ user.eventsCount }}</td>
     <div class="user-item__close" @click="handleDeleteUser">x</div>
   </tr>

@@ -1,17 +1,11 @@
-export type Phone = {
-  id: string;
-  category: string;
-  phoneId: string;
-  itemId: string;
+export interface User {
   name: string;
-  fullPrice: number;
-  price: number;
-  screen: string;
-  capacity: string;
-  color: string;
-  ram: string;
-  year: number;
-  image: string;
-  inCart?: boolean;
-  liked?: boolean;
-};
+  surname: string;
+  email: string;
+  phone: string;
+  id: number;
+  date: number;
+  eventsCount: number;
+  takenTimes: [];
+  nextEvent: number;
+}

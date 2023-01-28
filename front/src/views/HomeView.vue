@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <div class="main__head">
       <button class="main__add-user" @click="handleOpenModal"></button>
       <OptionsBlock
@@ -44,7 +44,7 @@ import ModalWindow from '../components/ModalWindow.vue';
 import UserForm from '../components/UserForm.vue';
 import Loader from '../components/UI/Loader.vue';
 
-import { getUsersLimit } from '../api/usersApi';
+import { getUsersLimit, calculateNextEvent } from '../api/usersApi';
 import { onMounted, onUpdated } from 'vue';
 
 import { useUsersStore } from '../stores/users';
@@ -74,23 +74,27 @@ export default {
 
     onMounted(() => {
       storeUsers.isLoading = true;
-      getUsersLimit(10, 'IDup', storeUsers.currentUserPage).then((res) => {
+      calculateNextEvent(10, storeUsers.currentUserPage).then((res) => {
         console.log('res', res);
+      }).then(() => {
+        getUsersLimit(10, 'IDup', storeUsers.currentUserPage).then((res) => {
+          console.log('res', res);
 
-        if (res === 'error505') {
-          storeUsers.externalServerError = true;
-        } else {
-          storeUsers.users = res[0];
-          storeUsers.totalCount = res[1];
-          console.log('users', storeUsers.users);
-          storeUsers.externalServerError = false;
-          storeUsers.notFoundError = false
-        }
-      }).catch(error => {
-        console.log(error)
-        storeUsers.notFoundError = true
-      }).finally(() => {
-        storeUsers.isLoading = false;
+          if (res === 'error505') {
+            storeUsers.externalServerError = true;
+          } else {
+            storeUsers.users = res[0];
+            storeUsers.totalCount = res[1];
+            console.log('users', storeUsers.users);
+            storeUsers.externalServerError = false;
+            storeUsers.notFoundError = false
+          }
+        }).catch(error => {
+          console.log(error)
+          storeUsers.notFoundError = true
+        }).finally(() => {
+          storeUsers.isLoading = false;
+        });
       });
     });
 

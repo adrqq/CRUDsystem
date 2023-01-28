@@ -1,4 +1,4 @@
-<template lang="">
+<template>
 <!-- create user profile page PAGE with table with events and fields (title, description, startDate, endDate) -->
 
 

@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <div class="app-wrapper">
     <ModalWindow :is-modal-open="storeUsers.isModalOpen">
       <UserForm @close-modal="handleOpenModal" />
