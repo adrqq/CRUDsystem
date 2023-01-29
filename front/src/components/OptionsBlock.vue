@@ -11,8 +11,6 @@
         <option value="SurnameUp">Surname Z-A</option>
         <option value="DateAddedUp">Date added ⇑</option>
         <option value="DateAddedDown">Date added ⇓</option>
-        <option value="EventCountUp">Event count ⇑</option>
-        <option value="EventCountDown">Event count ⇓</option>
       </select>
     </div>
 

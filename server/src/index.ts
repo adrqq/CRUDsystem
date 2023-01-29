@@ -98,21 +98,6 @@ app.use("/", (req, res, next) => {
               .limit(Number(_limit));
             break;
 
-          case "EventCountUp":
-            cursor = users
-              .find()
-              .sort({ eventsCount: 1 })
-              .skip((Number(_page) - 1) * Number(_limit))
-              .limit(Number(_limit));
-            break;
-
-          case "EventCountDown":
-            cursor = users
-              .find()
-              .sort({ eventsCount: -1 })
-              .skip((Number(_page) - 1) * Number(_limit))
-              .limit(Number(_limit));
-            break;
           default:
             cursor = users
               .find()
