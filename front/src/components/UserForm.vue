@@ -31,7 +31,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { useUsersStore } from '../stores/users';
 import { addUser } from '../api/usersApi';
 import { getUsersLimit } from '../api/usersApi';
@@ -51,12 +51,8 @@ export default {
       this.$emit('close-modal');
     },
 
-    handleUserSubmit(e: Event) {
+    handleUserSubmit(e) {
       e.preventDefault();
-      // const name = (e.target as HTMLFormElement).name.value;
-      // const surname = (e.target as HTMLFormElement).surname.value;
-      // const email = (e.target as HTMLFormElement).email.value;
-      // const phone = (e.target as HTMLFormElement).phone.value;
 
       const user = {
         name: this.name,
@@ -93,8 +89,8 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/utils/vars.scss';
-@import '@/utils/mixins.scss';
+@import '../utils/vars.scss';
+@import '../utils/mixins.scss';
 
 .user-form {
   display: flex;
@@ -122,7 +118,7 @@ export default {
   &__close {
     width: 30px;
     height: 30px;
-    background: url('@/assets/cross.png') no-repeat;
+    background: url('../assets/cross.png') no-repeat;
     background-size: cover;
     cursor: pointer;
     border: none;

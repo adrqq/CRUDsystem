@@ -124,9 +124,6 @@ export default {
     eventsGetter() {
       getUserEventsLimit(this.usersStore.currentUser.id, this.eventsLimit, 1, this.sortBy).then((res) => {
 
-        console.log(res);
-        console.log(res[0]);
-        console.log('count', res[1]);
         this.eventsStore.totalCount = res[1];
         this.eventsStore.events = res[0];
       });
@@ -214,10 +211,6 @@ export default {
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-
-    // @include onMobile {
-    //   width: 100%;
-    // }
 
     &:hover {
       background-color: $dark-sea-green-color;
@@ -319,36 +312,6 @@ export default {
     flex-direction: column;
     margin-top: 20px;
   }
-
-  &__events-item {
-    // display: flex;
-    // justify-content: space-between;
-    // align-items: center;
-    // width: 100%;
-    // padding: 10px;
-    // border: 1px solid #000;
-    // border-radius: 5px;
-    // margin-bottom: 10px;
-
-    // @include onMobile {
-    //   flex-direction: column;
-    // }
-  }
-
-  // &__events-item-info {}
-
-  // &__events-item-title {}
-
-  // &__events-item-title-date {}
-
-  // &__events-item-description {
-  //   width: 100px;
-  //   word-wrap: break-word;
-  // }
-
-  // &__events-item-dates {}
-
-  // &__events-item-date {}
 
   &__content {
     flex-direction: column;

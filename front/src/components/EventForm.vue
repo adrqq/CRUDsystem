@@ -1,6 +1,4 @@
 <template>
-  <!-- create beautiful form to add new event with fields name description date and userId -->
-
   <div class="event-form">
     <div class="event-form__title">
       <h2 class="event-form__title-text">Add new event</h2>
@@ -16,7 +14,7 @@
       </div>
       <div class="event-form__content-item">
         <span class="event-form__content-item-title">Date:</span>
-        <input type="date" class="event-form__content-item-input" v-model.trim="date" required />
+        <input type="date" class="event-form__content-item-input" v-model.trim="date" required  :min="dateNow"/>
       </div>
       <div class="event-form__content-item">
         <span class="event-form__content-item-title">StartTime:</span>
@@ -42,6 +40,7 @@
 import { useEventsStore } from '../stores/events';
 import { useUsersStore } from '../stores/users';
 import { addEvent, getUserEventsLimit } from '../api/eventsApi';
+import { calculateNextEvent } from "../api/usersApi";
 
 export default {
   name: 'EventForm',
@@ -53,6 +52,7 @@ export default {
       date: '',
       startTime: '',
       endTime: '',
+      dateNow: new Date().toISOString().split('T')[0].toString().trim(),
     };
   },
 
@@ -73,11 +73,6 @@ export default {
 
     handleAddEvent(e) {
       e.preventDefault();
-      // console.log('name', this.name);
-      // console.log('description', this.description);
-      // console.log('date', this.date);
-      // console.log('startTime', this.startTime);
-      // console.log('endTime', this.endTime);
 
       const dateControl = document.querySelector('input[type="date"]');
       console.log(new Date(dateControl.valueAsNumber).toUTCString())
@@ -148,14 +143,14 @@ export default {
             console.log('err', err);
           });
       }
+
+      calculateNextEvent(10, this.usersStore.currentUserPage)
     }
   },
 }
-
 </script>
 
 <style lang="scss">
-// add styles to form such as below
 .event-form {
   width: 100%;
   min-height: 400px;

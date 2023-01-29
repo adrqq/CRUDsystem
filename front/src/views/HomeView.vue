@@ -49,8 +49,6 @@ import { onMounted, onUpdated } from 'vue';
 
 import { useUsersStore } from '../stores/users';
 
-import router from '../router';
-
 export default {
   name: 'HomeView',
   components: {
@@ -124,15 +122,6 @@ export default {
     },
   },
 
-  // created() {
-  //   getUsersLimit(this.usersLimit).then((res) => {
-  //     console.log('res', res);
-
-  //     storeUsers.users = res.results;
-  //     console.log('users', storeUsers.users);
-  //   });
-  // },
-
   watch: {
     usersLimit() {
       this.storeUsers.isLoading = true;
@@ -164,7 +153,6 @@ export default {
     align-items: flex-start;
     margin-top: 20px;
     flex-direction: column;
-    // margin: 20px 50px;
 
     @include onTablet {
       flex-direction: row;

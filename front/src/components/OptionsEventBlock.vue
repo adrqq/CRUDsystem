@@ -24,7 +24,7 @@
     </div>
   </div>
 </template>
-<script lang="ts">
+<script>
 import { useUsersStore } from '../stores/users';
 import { useEventsStore } from '../stores/events';
 
@@ -46,13 +46,12 @@ export default {
   },
 
   methods: {
-    setPagination(e: any) {
-      // this.$emit('setPagination', e.target.value);
+    setPagination(e) {
       this.$emit('update:eventsLimit', e.target.value)
       this.eventsStore.eventsLimit = e.target.value
     },
 
-    setSortby(e: any) {
+    setSortby(e) {
       this.$emit('update:sortBy', e.target.value);
     },
   },
@@ -70,8 +69,8 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/utils/vars.scss';
-@import '@/utils/mixins.scss';
+@import '../utils/vars.scss';
+@import '../utils/mixins.scss';
 
 .options {
   display: flex;
@@ -79,10 +78,6 @@ export default {
   flex-direction: column;
   gap: 20px;
   margin-top: 30px;
-
-  // @include onTablet {
-  //   margin-left: 0;
-  // }
 
   @include onTablet {
     flex-direction: row;

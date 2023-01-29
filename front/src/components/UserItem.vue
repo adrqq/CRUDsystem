@@ -8,7 +8,7 @@
     <td>
       <a href="tel:+380000000000" class="user-item__item">{{ user.phone }}</a>
     </td>
-    <td class="user-item__item">{{ user.nextEvent }}</td>
+    <td class="user-item__item">{{ user.nextEvent || 'No events'}}</td>
     <td>{{ user.eventsCount }}</td>
     <div class="user-item__close" @click="handleDeleteUser">x</div>
   </tr>
@@ -17,7 +17,6 @@
 <script>
 import { useUsersStore } from '../stores/users';
 import { deleteUser } from '../api/usersApi'
-// import router from 'vue-router';
 
 export default {
   name: 'UserItem',

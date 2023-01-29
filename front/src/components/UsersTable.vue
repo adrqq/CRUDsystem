@@ -6,14 +6,12 @@
         <th>Name</th>
         <th>Email</th>
         <th>Phone</th>
-        <th>Time to next event</th>
+        <th>Next event at</th>
         <th>Events count</th>
       </tr>
     </thead>
     <tbody>
       <UserItem :user="user" v-for="user in users" :key="user._id" v-if="!storeUsers.isLoading"/>
-
-
       <div class="loader-wrapper" v-if="storeUsers.isLoading">
         <Loader />
       </div>

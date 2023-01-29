@@ -1,105 +1,11 @@
 import express, { Express, Request, Response } from "express";
-import { User } from "./types";
 import cors from "cors";
-import path from "path";
-import phones from "../data/phones.json";
-import { fileURLToPath } from "url";
 import { MongoClient } from "mongodb";
-import { ClientRequest } from "http";
 
 const PORT = 5210;
 const client = new MongoClient(
   "mongodb+srv://Adrian:Mongocrud2022@crud.j0ehphe.mongodb.net/?retryWrites=true&w=majority"
 );
-
-// add users to db
-
-// const addUsers = async () => {
-//   try {
-//     await client.connect();
-
-//     const users = client.db().collection('users');
-
-//     for (let i = 1; i <= 60; i++) {
-//       await users.insertOne({
-//         name: names[i],
-//         surname: surnames[i],
-//         email: `forever${Math.floor(Math.random() * 100000)}@gmail.com`,
-//         phone: `+38099${Math.floor(Math.random() * 10000000)}`,
-//         id: i,
-//         date: Date.now(),
-//         eventsCount: 0,
-//       });
-//     }
-
-//     console.log('Sucsessfully added users');
-//   } catch(err) {
-//     console.log(err);
-//   } finally {
-//     await client.close();
-//   }
-// };
-
-// addUsers();
-
-// delete all users
-
-// const deleteUsers = async () => {
-//   try {
-//     const users = client.db().collection('users');
-//     await users.deleteMany({});
-//     console.log('Deleted users correctly');
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
-// deleteUsers();
-
-// create events collection and add events to db with fields: name, description, date, id
-
-// const addEvents1method = async () => {
-//   try {
-//     await client.connect();
-//     const events = client.db().collection('events');
-//     let id = 0;
-
-//     for (let i = 1; i <= 60; i++) {
-//       for(let j = 1; j <= 40; j++) {
-//         id++;
-
-//         await events.insertOne({
-//           id: id,
-//           name: `Event ${j}`,
-//           description: `Description ${j}`,
-//           date: Date.now(),
-//           userId: i,
-//         });
-//       }
-//     }
-//     console.log('Sucsessfully added events');
-
-//   } catch(err) {
-//     console.log(err);
-//   } finally {
-//     await client.close();
-//   }
-// };
-
-// addEvents1method();
-
-// delete all events
-// const deleteEvents = async () => {
-//   try {
-//     const events = client.db().collection('events');
-//     await events.deleteMany({});
-//     console.log('Deleted events correctly');
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
-// deleteEvents();
 
 function connectToMongo() {
   client
@@ -201,22 +107,21 @@ app.use("/", (req, res, next) => {
         const results = await cursor.toArray();
         const totalCount = await users.countDocuments();
 
-        // for (let i = 0; i < results.length; i++) {
-        //   const events = client.db().collection('events');
-        //   const evData = events.find({ userId: Number(results[i].id) });
-        //   const count = await evData.toArray();
+        for (let i = 0; i < results.length; i++) {
+          const events = client.db().collection("events");
+          const evData = events.find({ userId: Number(results[i].id) });
+          const count = await evData.toArray();
 
-        //   let times = count.map(eve => eve.date)
-        //   console.log(times);
+          let times = count.map((eve) => eve.date);
+          console.log(times);
 
-        //   times = times.filter(el => el - Date.now() >= 0)
+          times = times.filter((el) => el - Date.now() >= 0);
 
-        //   results[i] = {
-        //     ...results[i],
-        //     eventsCount: count.length,
-        //     timeToNextEvent: Math.min(...times) || 0,
-        //   };
-        // }
+          results[i] = {
+            ...results[i],
+            eventsCount: count.length,
+          };
+        }
 
         res.send([results, totalCount]);
       } catch (err) {
@@ -379,11 +284,19 @@ app.use("/", (req, res, next) => {
   app.post("/users/delete", (req: Request, res: Response) => {
     const { _userId } = req.query;
 
-    const users = client.db().collection("users");
+    const deleteUsers = async () => {
+      try {
+        const users = client.db().collection("users");
+        const events = client.db().collection("events");
 
-    console.log(_userId);
+        await users.deleteOne({ id: Number(_userId) });
+        await events.deleteMany({ userId: Number(_userId) });
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-    users.deleteOne({ id: Number(_userId) });
+    deleteUsers();
 
     res.send("User deleted");
   });
@@ -391,11 +304,17 @@ app.use("/", (req, res, next) => {
   app.post("/events/delete", (req: Request, res: Response) => {
     const { _eventId } = req.query;
 
-    const events = client.db().collection("events");
+    const deleteEvents = async () => {
+      try {
+        const events = client.db().collection("events");
 
-    console.log("eventid", _eventId);
+        await events.deleteOne({ id: Number(_eventId) });
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-    events.deleteOne({ id: Number(_eventId) });
+    deleteEvents();
 
     res.send("Event deleted");
   });
@@ -418,19 +337,47 @@ app.use("/", (req, res, next) => {
           const userEvents = await events
             .find({ userId: usersLimit[i].id })
             .toArray();
-          console.log(userEvents);
 
           userEvents.sort((a, b) => {
-            return a.date - b.date;
+            const aParsed =
+              new Date(a.date).toUTCString().split("").splice(0, 17).join("") +
+              a.startTime +
+              ":00" +
+              " GMT";
+            const bParsed =
+              new Date(b.date).toUTCString().split("").splice(0, 17).join("") +
+              b.startTime +
+              ":00" +
+              " GMT";
+
+            return Date.parse(aParsed) - Date.parse(bParsed);
           });
 
           for (let j = 0; j < userEvents.length; j++) {
-            if (userEvents[j].date > Date.now()) {
+            const eventDate =
+              new Date(userEvents[j].date)
+                .toUTCString()
+                .split("")
+                .splice(0, 17)
+                .join("") +
+              userEvents[j].startTime +
+              ":00" +
+              " GMT";
+
+            console.log(eventDate);
+
+            if (Date.parse(eventDate) > Date.now()) {
               await users.updateOne(
                 { id: usersLimit[i].id },
-                { $set: { nextEvent: userEvents[j].date } }
+                { $set: { nextEvent: eventDate } }
               );
+
               break;
+            } else {
+              await users.updateOne(
+                { id: usersLimit[i].id },
+                { $set: { nextEvent: "No events" } }
+              );
             }
           }
         }

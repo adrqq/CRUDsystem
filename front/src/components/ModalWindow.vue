@@ -5,9 +5,7 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { classBody } from '@babel/types';
-
+<script>
 export default {
   name: 'ModalWindow',
 
@@ -28,8 +26,8 @@ export default {
 };
 </script>
 <style lang="scss">
-@import '@/utils/vars.scss';
-@import '@/utils/mixins.scss';
+@import '../utils/vars.scss';
+@import '../utils/mixins.scss';
 
 .modal {
   top: 0;

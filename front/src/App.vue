@@ -17,21 +17,13 @@
 </template>
 
 <script>
-import PaginationBlock from './components/PaginationBlock.vue';
-import UsersTable from './components/UsersTable.vue';
-import OptionsBlock from './components/OptionsBlock.vue';
 import ModalWindow from './components/ModalWindow.vue';
 import UserForm from './components/UserForm.vue';
 import Loader from './components/UI/Loader.vue';
 import EventForm from './components/EventForm.vue';
 
-import { getUsersLimit } from './api/usersApi';
-import { onMounted, onUpdated } from 'vue';
-
 import { useUsersStore } from './stores/users';
 import { useEventsStore } from  './stores/events' ;
-
-import router from './router';
 
 export default {
   name: 'App',

@@ -15,11 +15,9 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { ref } from 'vue';
+<script>
 import { useUsersStore } from '../stores/users';
 import { getUsersLimit } from '../api/usersApi';
-import { useMediaQuery } from '@vueuse/core'
 import { useEventsStore } from '../stores/events';
 import { getUserEventsLimit } from '../api/eventsApi';
 
@@ -65,14 +63,14 @@ export default {
       }
     },
 
-    activePage(button: number) {
+    activePage(button) {
       console.log('button', button);
       return button === this.currentPage ? 'pagination__item_active' : ''
     },
   },
 
   methods: {
-    getButtons(start: number, finish: number): number[] {
+    getButtons(start, finish) {
       const numbers = [];
 
       for (let i = start; i <= finish; i++) {
@@ -82,7 +80,7 @@ export default {
       return numbers;
     },
 
-    handlePageChange(page: number) {
+    handlePageChange(page) {
       console.log(page);
 
       if (this.isEvents) {
@@ -95,7 +93,7 @@ export default {
       }
     },
 
-    handleArrowClick(direction: string) {
+    handleArrowClick(direction) {
       if (this.isEvents) {
         if (direction === 'left') {
           if (this.storeEvents.currentEventPage > 1) {
@@ -183,10 +181,6 @@ export default {
   margin-top: 30px;
   flex-direction: row;
   margin-bottom: 40px;
-  // position: absolute;
-  // bottom: 0;
-  // left: 50%;
-  // transform: translateX(-50%);
 
   &__button {
     width: 20px;

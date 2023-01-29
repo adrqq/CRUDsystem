@@ -28,7 +28,7 @@
     </div>
   </div>
 </template>
-<script lang="ts">
+<script >
 import { useUsersStore } from '../stores/users';
 
 export default {
@@ -49,12 +49,12 @@ export default {
   },
 
   methods: {
-    setPagination(e: any) {
+    setPagination(e) {
       // this.$emit('setPagination', e.target.value);
       this.$emit('update:usersLimit', e.target.value)
     },
 
-    setSortby(e: any) {
+    setSortby(e) {
       this.$emit('update:sortBy', e.target.value);
     },
   },
@@ -70,8 +70,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/utils/vars.scss';
-@import '@/utils/mixins.scss';
+@import '../utils/vars.scss';
+@import '../utils/mixins.scss';
 
 .options {
   display: flex;
